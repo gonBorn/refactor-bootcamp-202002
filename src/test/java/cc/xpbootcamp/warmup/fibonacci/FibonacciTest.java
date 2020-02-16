@@ -41,4 +41,18 @@ class FibonacciTest {
 
         fibValues.forEach((key, value) -> assertEquals(Optional.of(fibonacci.calculate(key)).get(), value));
     }
+
+    @Test
+    void should_throw_when_calculate_given_position_is_greater_than_50() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            fibonacci.calculate(51);
+        });
+    }
+
+    @Test
+    void should_throw_when_calculate_given_position_is_less_than_0() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            fibonacci.calculate(-1);
+        });
+    }
 }
