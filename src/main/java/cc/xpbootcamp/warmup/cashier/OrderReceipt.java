@@ -8,6 +8,7 @@ package cc.xpbootcamp.warmup.cashier;
  *
  */
 public class OrderReceipt {
+    private final double taxRate = 0.1;
     private Order order;
 
     public OrderReceipt(Order order) {
@@ -38,7 +39,7 @@ public class OrderReceipt {
             output.append('\n');
 
             // calculate sales tax @ rate of 10%
-            double salesTax = lineItem.totalAmount() * .10;
+            double salesTax = lineItem.totalAmount() * taxRate;
             totSalesTx += salesTax;
 
             // calculate total amount of lineItem = price * quantity + 10 % sales tax
