@@ -10,6 +10,8 @@ public class Fibonacci {
         container.add(0, 1L);
         container.add(1, 1L);
 
+        IntStream.rangeClosed(2, position).forEach(i -> container.add(i, container.get(i - 1) + container.get(i - 2)));
+
         return container.get(position - 1);
     }
 }
