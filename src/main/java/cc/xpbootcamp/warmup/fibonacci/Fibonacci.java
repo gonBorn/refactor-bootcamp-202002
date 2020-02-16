@@ -8,6 +8,7 @@ public class Fibonacci {
     public long calculate(int position) {
         List<Long> container = new ArrayList<>();
         container.add(0, 1L);
+        container.add(1, 1L);
 
         return container.get(position - 1);
     }
