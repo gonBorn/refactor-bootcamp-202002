@@ -16,7 +16,7 @@ class OrderReceiptTest {
         add(new LineItem("chocolate", 20.0, 1));
     }};
     private LocalDate tuesday = LocalDate.of(2020, 02, 18);
-    private LocalDate wedesday = LocalDate.of(2020, 02, 19);
+    private LocalDate wednesday = LocalDate.of(2020, 02, 19);
 
     @Test
     void shouldPrintCustomerInformationOnOrder() {
@@ -54,7 +54,7 @@ class OrderReceiptTest {
 
     @Test
     public void shouldPrintDiscount() {
-        OrderReceipt receipt = new OrderReceipt(new Order(null, null, lineItems, wedesday));
+        OrderReceipt receipt = new OrderReceipt(new Order(null, null, lineItems, wednesday));
 
         String output = receipt.printReceipt();
 
