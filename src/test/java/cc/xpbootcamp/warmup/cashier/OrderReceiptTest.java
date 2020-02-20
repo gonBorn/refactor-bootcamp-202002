@@ -15,8 +15,8 @@ class OrderReceiptTest {
         add(new LineItem("biscuits", 5.0, 5));
         add(new LineItem("chocolate", 20.0, 1));
     }};
-    private LocalDate tuesday = LocalDate.of(2020, 02, 18);
-    private LocalDate wednesday = LocalDate.of(2020, 02, 19);
+    private LocalDate tuesday = LocalDate.of(2020, 2, 18);
+    private LocalDate wednesday = LocalDate.of(2020, 2, 19);
 
     @Test
     void shouldPrintCustomerInformationOnOrder() {
@@ -24,7 +24,6 @@ class OrderReceiptTest {
         OrderReceipt receipt = new OrderReceipt(order);
 
         String output = receipt.printReceipt();
-
 
         assertThat(output, containsString("Mr X"));
         assertThat(output, containsString("Chicago, 60601"));
@@ -36,11 +35,11 @@ class OrderReceiptTest {
 
         String output = receipt.printReceipt();
 
-        assertThat(output, containsString("milk，\t10.0x2，\t20.0\n"));
-        assertThat(output, containsString("biscuits，\t5.0x5，\t25.0\n"));
-        assertThat(output, containsString("chocolate，\t20.0x1，\t20.0\n"));
-        assertThat(output, containsString("税额：6.5"));
-        assertThat(output, containsString("总价：71.5"));
+        assertThat(output, containsString("milk,\t10.00\tx\t2,\t20.00\n"));
+        assertThat(output, containsString("biscuits,\t5.00\tx\t5,\t25.00\n"));
+        assertThat(output, containsString("chocolate,\t20.00\tx\t1,\t20.00\n"));
+        assertThat(output, containsString("税额：6.50"));
+        assertThat(output, containsString("总价：71.50"));
     }
 
     @Test
@@ -49,7 +48,7 @@ class OrderReceiptTest {
 
         String output = receipt.printReceipt();
 
-        assertThat(output, containsString("2020年02月18日，星期二"));
+        assertThat(output, containsString("2020年2月18日，星期二"));
     }
 
     @Test
@@ -58,8 +57,8 @@ class OrderReceiptTest {
 
         String output = receipt.printReceipt();
 
-        assertThat(output, containsString("税额：6.5"));
-        assertThat(output, containsString("折扣：1.3"));
-        assertThat(output, containsString("总价：70.2"));
+        assertThat(output, containsString("税额：6.50"));
+        assertThat(output, containsString("折扣：1.30"));
+        assertThat(output, containsString("总价：70.20"));
     }
 }

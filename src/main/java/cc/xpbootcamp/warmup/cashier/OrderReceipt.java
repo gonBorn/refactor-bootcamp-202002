@@ -1,12 +1,11 @@
 package cc.xpbootcamp.warmup.cashier;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.time.LocalDate;
+import java.time.DayOfWeek;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
-import static cc.xpbootcamp.warmup.cashier.Constant.*;
+import static java.lang.System.lineSeparator;
 
 /**
  * OrderReceipt prints the details of order including customer name, address, description, quantity,
@@ -15,7 +14,6 @@ import static cc.xpbootcamp.warmup.cashier.Constant.*;
  * total sales tax) and prints it.
  */
 public class OrderReceipt {
-    private static final char MULTIPLY = 'x';
     private static final String TITLE_OF_RECEIPT = "===== 老王超市，值得信赖 =====";
     private static final String SALES_TAX = "税额";
     private static final String DISCOUNT = "折扣";
@@ -30,75 +28,60 @@ public class OrderReceipt {
     }
 
     public String printReceipt() {
-        StringBuilder output = new StringBuilder();
-
-        printHeader(output);
-
-        printDate(output);
-
-        printCustomInfo(output);
-
-        printLineItems(output);
-
-        calculateAndPrintTaxAndAmount(output);
-
-        return output.toString();
+        return getHeader()
+          + getDate()
+          + getCustomInfo()
+          + getLineItems()
+          + getAmount();
     }
 
-    private void printDate(StringBuilder output) {
-        LocalDate date = order.getDate();
-        output.append(DateTimeFormatter.ofPattern(YY_MM_DD).format(date));
-        output.append(COMMA);
-        output.append(WEEK_CHAR).append(WEEKS[date.getDayOfWeek().getValue()]);
-        output.append(NEW_LINE);
+    private String getHeader() {
+        return TITLE_OF_RECEIPT + lineSeparator();
     }
 
-    private void printLineItems(StringBuilder output) {
-        for (LineItem lineItem : order.getLineItems()) {
-            output.append(lineItem.getDescription());
-            output.append(COMMA);
-            output.append(TAB);
-            output.append(lineItem.getPrice());
-            output.append(MULTIPLY);
-            output.append(lineItem.getQuantity());
-            output.append(COMMA);
-            output.append(TAB);
-            output.append(lineItem.totalAmount());
-            output.append(NEW_LINE);
-        }
+    private String getDate() {
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy年M月dd日，EEE", Locale.CHINA);
+        return dateFormat.format(order.getDate()) + lineSeparator();
     }
 
-    private void printTaxAndAmount(StringBuilder output, double totalSalesTax, double totalAmount) {
-        output.append(SALES_TAX).append(COLON).append(totalSalesTax).append(NEW_LINE);
-        double discount = 0;
-        if (order.getDate().getDayOfWeek().getValue() == 3) {
-            discount = totalAmount * DISCOUNT_RATE;
-            output.append(DISCOUNT).append(COLON)
-              .append(BigDecimal.valueOf(discount).setScale(2, RoundingMode.HALF_UP).doubleValue())
-              .append(NEW_LINE);
-        }
-        output.append(TOTAL_AMOUNT).append(COLON)
-          .append(BigDecimal.valueOf(totalAmount + totalSalesTax - discount).setScale(2, RoundingMode.HALF_UP).doubleValue())
-          .append(NEW_LINE);
+    private String getCustomInfo() {
+        return String.format("%s，%s", order.getCustomerName(), order.getCustomerAddress()) + lineSeparator();
     }
 
-    private void printCustomInfo(StringBuilder output) {
-        output.append(order.getCustomerName());
-        output.append(order.getCustomerAddress());
-        output.append(NEW_LINE);
+    private String getLineItems() {
+        return order.getLineItems().stream()
+          .map(LineItem::getLineItemInformation)
+          .collect(Collectors.joining(lineSeparator())) + lineSeparator();
     }
 
-    private void printHeader(StringBuilder output) {
-        output.append(TITLE_OF_RECEIPT).append(NEW_LINE);
+    private double calculateAmountWithoutTaxAndDiscount() {
+        return order.getLineItems().stream()
+          .mapToDouble(LineItem::getTotalAmount)
+          .sum();
     }
 
-    private void calculateAndPrintTaxAndAmount(StringBuilder output) {
-        double totalSalesTax = 0d;
-        double totalAmount = 0d;
-        for (LineItem lineItem : order.getLineItems()) {
-            totalSalesTax += lineItem.totalAmount() * TAX_RATE;
-            totalAmount += lineItem.totalAmount();
-        }
-        printTaxAndAmount(output, totalSalesTax, totalAmount);
+    private double calculateSalesTax(double amount) {
+        return amount * TAX_RATE;
+    }
+
+    private double calculateDiscount(double amount) {
+        return isDiscountDay() ? amount * DISCOUNT_RATE : 0;
+    }
+
+    private boolean isDiscountDay() {
+        return order.getDate().getDayOfWeek() == DayOfWeek.WEDNESDAY;
+    }
+
+    private String getAmount() {
+        double amount = calculateAmountWithoutTaxAndDiscount();
+        double salesTax = calculateSalesTax(amount);
+        double discount = calculateDiscount(amount);
+        double totalAmount = amount - discount + salesTax;
+
+        return String.format("%s：%.2f", SALES_TAX, salesTax)
+          + lineSeparator()
+          + (isDiscountDay() ? String.format("%s：%.2f", DISCOUNT, discount)  + lineSeparator() : "")
+          + String.format("%s：%.2f", TOTAL_AMOUNT, totalAmount)
+          + lineSeparator();
     }
 }
