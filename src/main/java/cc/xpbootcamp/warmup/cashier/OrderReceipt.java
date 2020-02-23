@@ -29,10 +29,10 @@ public class OrderReceipt {
 
     public String printReceipt() {
         return getHeader()
-          + getDate()
-          + getCustomInfo()
-          + getLineItems()
-          + getAmount();
+            + getDate()
+            + getCustomer()
+            + getLineItems()
+            + getAmount();
     }
 
     private String getHeader() {
@@ -44,20 +44,20 @@ public class OrderReceipt {
         return dateFormat.format(order.getDate()) + lineSeparator();
     }
 
-    private String getCustomInfo() {
+    private String getCustomer() {
         return String.format("%s，%s", order.getCustomerName(), order.getCustomerAddress()) + lineSeparator();
     }
 
     private String getLineItems() {
         return order.getLineItems().stream()
-          .map(LineItem::getLineItemInformation)
-          .collect(Collectors.joining(lineSeparator())) + lineSeparator();
+            .map(LineItem::getLineItemInformation)
+            .collect(Collectors.joining(lineSeparator())) + lineSeparator();
     }
 
     private double calculateAmountWithoutTaxAndDiscount() {
         return order.getLineItems().stream()
-          .mapToDouble(LineItem::getTotalAmount)
-          .sum();
+            .mapToDouble(LineItem::getTotalAmount)
+            .sum();
     }
 
     private double calculateSalesTax(double amount) {
@@ -79,9 +79,9 @@ public class OrderReceipt {
         double totalAmount = amount - discount + salesTax;
 
         return String.format("%s：%.2f", SALES_TAX, salesTax)
-          + lineSeparator()
-          + (isDiscountDay() ? String.format("%s：%.2f", DISCOUNT, discount)  + lineSeparator() : "")
-          + String.format("%s：%.2f", TOTAL_AMOUNT, totalAmount)
-          + lineSeparator();
+            + lineSeparator()
+            + (isDiscountDay() ? String.format("%s：%.2f", DISCOUNT, discount) + lineSeparator() : "")
+            + String.format("%s：%.2f", TOTAL_AMOUNT, totalAmount)
+            + lineSeparator();
     }
 }
